@@ -1,0 +1,43 @@
+# This function acts to test my conjecture I hypothesized regarding how elliptic curve cryptography works with an elliptic curve of the form 
+# y^2 = x^3 + B mod p where B is some random number and p is a prime such that p is equivalent to 1 mod 6. Preliminary testing indicated that a
+# certain feature emerges when B is a square or a cube and what the order of the function is divisble by, so this function is set up brute force 
+# up to a certain B value and return only the values that satisfy the conjecture. This code was created in CoCalc using the built in SageMath 
+# software that can compute mathematical operations while using a similar syntax to Python. This function takes a B limit and a number to test when dividing by.
+ 
+def conjecture(bLimit, divi):
+
+    # outputList is the array that stores the orders of all the various primes we are testing by for the elliptic curve
+    # correctList is the array that stores the B values that satisfy the conjecture
+    outputList = []
+    correctList = []
+
+    # This is the list of primes we are using for our elliptic curve
+    primes = [7, 13, 19, 31, 37, 43, 61, 67, 73, 79, 97, 103, 109, 127, 139, 151, 157, 163]
+
+    # sets the variable div to true and then set false if at least one of the prime elliptic curves does not follow the conjecture
+    div = True
+
+    # For loop to search through all the B values up to the limit provided excluding 0
+    for b in range(1, bLimit):
+	  # For loop to calculate all the prime elliptic curves
+        for i in range(0, len(primes)):
+		# Check if the B value is a multiple of the prime, this avoids the case where B is 0
+            if (b % primes[i]) != 0:
+		    # Uses SageMath's built in order calculator to calculate the order of the curve and appends it to the outputList
+                order = len(EllipticCurve(GF(primes[i]), [0,b]).points())
+                outputList.append(order)
+            
+	  # Loops through all the elements of the outputList and checks if it satisfies the division provided, if not div is set to false
+        for n in range(0, len(outputList)):
+            if (outputList[n] % divi) != 0:
+                div = False
+             
+        # if div is still true, then all the orders are divisible by our provided divisor and that B value is added to the correctList        
+        if div == True:
+            correctList.append(b)
+        
+	  # Resets div to true for the next loop and clears the outputList
+        div = True  
+        outputList.clear()
+        
+    return correctList
